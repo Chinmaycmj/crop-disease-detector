@@ -174,7 +174,7 @@ Open the local URL shown in the terminal (usually `http://localhost:8501`).
 - Add `kagglehub` to `requirements.txt`.
 - Add validation for uploaded images.
 - Improve the UI.
-- Add bilingual support (Kannada and English).
+- Add multi-language support (Hindi, Kannada, English).
 - Add a PDF report download after prediction.
 
 ## Contributing
