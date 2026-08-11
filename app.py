@@ -62,7 +62,7 @@ class DiseaseInfo(BaseModel):
     )
 
 
-def get_ai_treatment(disease_name, model_name="gemini-3.5-flash"):
+def get_ai_treatment(disease_name, lang_code="en", model_name="gemini-3.5-flash"):
     """
     Call Gemini for structured disease info.
 
@@ -73,11 +73,20 @@ def get_ai_treatment(disease_name, model_name="gemini-3.5-flash"):
     if _gemini_client is None:
         return None
 
+    lang_names = {"en": "English", "kn": "Kannada", "hi": "Hindi"}
+    target_lang = lang_names.get(lang_code, "English")
+
     try:
         from google.genai import types as _t  # already imported at module level
+        
+        prompt = (
+            f"Give information about {disease_name}. "
+            f"Respond entirely in {target_lang} language, including all field values in the JSON."
+        )
+        
         response = _gemini_client.models.generate_content(
             model=model_name,
-            contents=f"Give information about {disease_name}",
+            contents=prompt,
             config=_t.GenerateContentConfig(
                 response_mime_type="application/json",
                 response_schema=DiseaseInfo,
@@ -575,7 +584,7 @@ if uploaded_file is not None:
                 badge_class, bar_color = "badge-low", "#C62828"
 
             with st.spinner(T['ai_spinner']):
-                treatment_advice = get_ai_treatment(clean_name)
+                treatment_advice = get_ai_treatment(clean_name, lang_code=lang_code)
                 used_ai = treatment_advice is not None
                 if treatment_advice is None:
                     treatment_advice = get_treatment(disease_label)
