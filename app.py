@@ -122,6 +122,7 @@ UI_LABELS = {
         "source_ai": "✨ AI-Powered Analysis",
         "source_offline": "📚 Offline Reference Data",
         "offline_note": " (offline data available in English only)",
+        "pdf_english_note": "(Report will be generated in English)",
         "severity": "⚠️ Severity",
         "affected_crops": "🌾 Affected Crops",
         "recovery_timeline": "⏱️ Recovery Timeline",
@@ -155,6 +156,7 @@ UI_LABELS = {
         "source_ai": "✨ AI-ಆಧಾರಿತ ವಿಶ್ಲೇಷಣೆ",
         "source_offline": "📚 ಆಫ್‌ಲೈನ್ ಉಲ್ಲೇಖ ಡೇಟಾ",
         "offline_note": " (offline data available in English only)",
+        "pdf_english_note": "(ವರದಿ ಇಂಗ್ಲಿಷ್ನಲ್ಲಿ ರಚಿಸಲಾಗುತ್ತದೆ)",
         "severity": "⚠️ ತೀವ್ರತೆ",
         "affected_crops": "🌾 ಬಾಧಿತ ಬೆಳೆಗಳು",
         "recovery_timeline": "⏱️ ಚೇತರಿಕೆ ಸಮಯ",
@@ -188,6 +190,7 @@ UI_LABELS = {
         "source_ai": "✨ AI-संचालित विश्लेषण",
         "source_offline": "📚 ऑफ़लाइन संदर्भ डेटा",
         "offline_note": " (offline data available in English only)",
+        "pdf_english_note": "(रिपोर्ट अंग्रेज़ी में जनरेट होगी)",
         "severity": "⚠️ गंभीरता",
         "affected_crops": "🌾 प्रभावित फसलें",
         "recovery_timeline": "⏱️ रिकवरी का समय",
@@ -316,6 +319,7 @@ def get_treatment(disease_name):
 # ── PDF Report Generator ────────────────────────────────────────────
 def generate_pdf_report(disease_name, confidence, treatment_advice, uploaded_image):
     """Generate a professional PDF report and return it as bytes."""
+    T = UI_LABELS["en"]
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -384,15 +388,15 @@ def generate_pdf_report(disease_name, confidence, treatment_advice, uploaded_ima
     story.append(divider)
 
     # ── Prediction Result ──
-    story.append(Paragraph("Prediction Result", heading_style))
+    story.append(Paragraph(T["diagnosis_result"], heading_style))
 
     conf_color = HexColor("#2E7D32") if confidence > 80 else (
         HexColor("#E65100") if confidence > 50 else HexColor("#C62828")
     )
     result_data = [
-        [Paragraph("<b>Disease Name</b>", body_style),
+        [Paragraph(f'<b>{T["diagnosis_result"]}</b>', body_style),
          Paragraph(disease_name, body_style)],
-        [Paragraph("<b>Model Confidence</b>", body_style),
+        [Paragraph(f'<b>{T["model_confidence"]}</b>', body_style),
          Paragraph(f'<font color="{conf_color.hexval()}">{confidence:.1f}%</font>', body_style)],
     ]
     result_table = Table(result_data, colWidths=[page_w * 0.35, page_w * 0.65])
@@ -406,14 +410,14 @@ def generate_pdf_report(disease_name, confidence, treatment_advice, uploaded_ima
     story.append(Spacer(1, 6))
 
     # ── Medical Information ──
-    story.append(Paragraph("Medical Information", heading_style))
+    story.append(Paragraph(T["treatment_plan"], heading_style))
 
     # About
-    story.append(Paragraph("About This Condition", subheading_style))
+    story.append(Paragraph(T["about_condition"], subheading_style))
     story.append(Paragraph(treatment_advice["description"], body_style))
 
     # Symptoms (bullet list)
-    story.append(Paragraph("Symptoms", subheading_style))
+    story.append(Paragraph(T["symptoms"], subheading_style))
     symptom_items = [
         ListItem(Paragraph(s, list_item_style)) for s in treatment_advice["symptoms"]
     ]
@@ -421,7 +425,7 @@ def generate_pdf_report(disease_name, confidence, treatment_advice, uploaded_ima
                               bulletFontSize=8, leftIndent=18, spaceBefore=2, spaceAfter=2))
 
     # Treatment Steps (numbered list)
-    story.append(Paragraph("Treatment Steps", subheading_style))
+    story.append(Paragraph(T["treatment_steps"], subheading_style))
     treatment_items = [
         ListItem(Paragraph(t, list_item_style)) for t in treatment_advice["treatment"]
     ]
@@ -429,7 +433,7 @@ def generate_pdf_report(disease_name, confidence, treatment_advice, uploaded_ima
                               bulletFontSize=10, leftIndent=18, spaceBefore=2, spaceAfter=2))
 
     # Prevention Tips (bullet list)
-    story.append(Paragraph("Prevention Tips", subheading_style))
+    story.append(Paragraph(T["prevention"], subheading_style))
     prevention_items = [
         ListItem(Paragraph(p, list_item_style)) for p in treatment_advice["prevention"]
     ]
@@ -441,7 +445,7 @@ def generate_pdf_report(disease_name, confidence, treatment_advice, uploaded_ima
     if severity:
         sev_color_map = {"Low": "#2E7D32", "Medium": "#E65100", "High": "#C62828"}
         sev_hex = sev_color_map.get(severity, "#444444")
-        story.append(Paragraph("Severity", subheading_style))
+        story.append(Paragraph(T["severity"], subheading_style))
         story.append(Paragraph(
             f'<font color="{sev_hex}"><b>{severity}</b></font>', body_style
         ))
@@ -449,7 +453,7 @@ def generate_pdf_report(disease_name, confidence, treatment_advice, uploaded_ima
     # Affected Crops
     affected_crops = treatment_advice.get("affected_crops")
     if affected_crops:
-        story.append(Paragraph("Affected Crops", subheading_style))
+        story.append(Paragraph(T["affected_crops"], subheading_style))
         crop_items = [
             ListItem(Paragraph(c, list_item_style)) for c in affected_crops
         ]
@@ -459,17 +463,17 @@ def generate_pdf_report(disease_name, confidence, treatment_advice, uploaded_ima
     # Recovery Timeline
     recovery_timeline = treatment_advice.get("recovery_timeline")
     if recovery_timeline:
-        story.append(Paragraph("Recovery Timeline", subheading_style))
+        story.append(Paragraph(T["recovery_timeline"], subheading_style))
         story.append(Paragraph(recovery_timeline, body_style))
 
     # Farmer Advice (only present when AI-powered)
     farmer_advice_text = treatment_advice.get("farmer_advice")
     if farmer_advice_text:
-        story.append(Paragraph("Farmer Advice", subheading_style))
+        story.append(Paragraph(T["farmer_advice"], subheading_style))
         story.append(Paragraph(farmer_advice_text, body_style))
 
     # ── Uploaded Image ──
-    story.append(Paragraph("Uploaded Image", heading_style))
+    story.append(Paragraph(T["uploaded_image_caption"], heading_style))
     img_buf = BytesIO()
     img_copy = uploaded_image.copy()
     img_copy.thumbnail((800, 800))
@@ -688,11 +692,22 @@ if uploaded_file is not None:
             st.markdown(html_content, unsafe_allow_html=True)
 
             # ── Download PDF Report Button ──
+            st.markdown('<div class="download-section">', unsafe_allow_html=True)
+            st.caption(T["pdf_english_note"])
+
+            if lang_code != "en" and used_ai:
+                with st.spinner("Preparing English PDF content..."):
+                    pdf_treatment_advice = get_ai_treatment(clean_name, lang_code="en")
+                    if pdf_treatment_advice is None:
+                        pdf_treatment_advice = get_treatment(disease_label)
+            else:
+                pdf_treatment_advice = treatment_advice
+                
             pdf_bytes = generate_pdf_report(
                 disease_name=clean_name,
                 confidence=confidence,
-                treatment_advice=treatment_advice,
-                uploaded_image=image,
+                treatment_advice=pdf_treatment_advice,
+                uploaded_image=image
             )
             st.download_button(
                 label=T["download_pdf"],
@@ -700,6 +715,7 @@ if uploaded_file is not None:
                 file_name=f"crop_disease_report_{disease_label}.pdf",
                 mime="application/pdf",
             )
+            st.markdown('</div>', unsafe_allow_html=True)
 else:
     html_content = textwrap.dedent(f"""
     <div class="empty-state">
