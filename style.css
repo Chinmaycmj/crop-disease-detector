@@ -137,6 +137,26 @@ html, body, [class*="css"] {
     margin: 0;
 }
 
+/* Source Badge (AI vs Offline) */
+.source-badge {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-left: 0.6rem;
+    vertical-align: middle;
+}
+.source-ai {
+    background: linear-gradient(135deg, #E8EAF6, #C5CAE9);
+    color: #283593;
+}
+.source-offline {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
 /* Structured Treatment Sub-sections */
 .info-section {
     margin-bottom: 1rem;
@@ -219,4 +239,15 @@ html, body, [class*="css"] {
     margin-bottom: 0.4rem;
     font-size: 0.88rem;
     line-height: 1.5;
+}
+
+/* Download Section Wrapper */
+.download-section {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid rgba(46,125,50,0.12);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    text-align: center;
 }
